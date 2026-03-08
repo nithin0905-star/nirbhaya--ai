@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NIRBHAYA AI — Women's Safety Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="phone-frame">
+    <div class="phone-screen" id="phoneScreen">
+
+      <!-- ══ HOME SCREEN ══ -->
+      <div class="screen active" id="screen-home">
+        <div class="home-header">
+          <div class="logo-block">
+            <span class="logo-icon">🛡️</span>
+            <span class="logo-text">NIRBHAYA AI</span>
+          </div>
+          <div class="time-display" id="clockDisplay">--:--</div>
+        </div>
+
+        <div class="status-badge inactive" id="statusBadge">
+          <div class="badge-dot off" id="badgeDot"></div>
+          <span id="statusText">Protection Inactive</span>
+        </div>
+
+        <!-- GPS Permission Banner — shown until permission is granted -->
+        <div class="gps-banner" id="gpsBanner">
+          <span>📍</span>
+          <div>
+            <div class="gps-banner-title">Enable Live Location</div>
+            <div class="gps-banner-sub">Required for real-time threat detection & SMS alerts</div>
+          </div>
+          <button class="gps-enable-btn" onclick="requestLocation()">Enable</button>
+        </div>
+
+        <div class="status-circle-wrapper">
+          <div class="status-circle" id="statusCircle" onclick="navigateTo('monitoring')"
+            style="background:var(--surface); border-color:var(--border)">
+            <div id="circleContent">
+              <div style="font-size:36px; text-align:center">🔒</div>
+              <div class="status-level" style="color:var(--text-muted); margin-top:6px">TAP TO VIEW</div>
+            </div>
+          </div>
+          <div class="status-hint" id="statusHint">Protection is off</div>
+        </div>
+
+        <button class="protect-btn start" id="protectBtn" onclick="toggleProtection()">
+          ▶ Activate Protection
+        </button>
+
+        <div class="quick-actions">
+          <button class="qa-btn" onclick="navigateTo('monitoring')">
+            <span>📡</span><span>Live Monitor</span>
+          </button>
+          <button class="qa-btn" onclick="navigateTo('alert')">
+            <span>🔔</span><span>Alert History</span>
+          </button>
+          <button class="qa-btn sos" onclick="triggerSOS()">
+            <span>🆘</span><span>SOS</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Trusted Contacts</div>
+          <div id="homeContacts"></div>
+        </div>
+
+        <!-- Live Location Status Bar -->
+        <div class="location-bar" id="locationBar">
+          <span class="loc-icon" id="locIcon">⏳</span>
+          <span class="loc-text" id="locText">Waiting for GPS…</span>
+          <span class="loc-acc" id="locAcc"></span>
+        </div>
+
+        <div class="home-footer">
+          <span id="footerNetwork">🌐 Connected</span>
+          <span>🔋 <span id="footerBattery">--</span></span>
+          <span id="footerLocation">📍 Locating…</span>
+        </div>
+      </div>
+
+      <!-- ══ LIVE MONITORING ══ -->
+      <div class="screen" id="screen-monitoring">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigateTo('home')">← Back</button>
+          <h2 class="screen-title">Live Monitoring</h2>
+          <div class="live-dot"></div>
+        </div>
+
+        <div class="scenario-selector">
+          <span class="scenario-label">DEMO:</span>
+          <button class="scenario-btn active" onclick="setScenario('safe',this)">Safe</button>
+          <button class="scenario-btn" onclick="setScenario('suspicious',this)">Suspicious</button>
+          <button class="scenario-btn" onclick="setScenario('danger',this)">Danger</button>
+          <button class="scenario-btn live-btn" id="liveScenarioBtn" onclick="setScenario('live',this)">📍 Live</button>
+        </div>
+
+        <div class="threat-ring-card" id="ringCard" style="border-color:var(--safe)">
+          <svg width="120" height="120" viewBox="0 0 120 120" id="ringsvg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#1e2d4a" stroke-width="10"/>
+            <circle id="ringFill" cx="60" cy="60" r="52" fill="none" stroke="#22c55e" stroke-width="10"
+              stroke-dasharray="0 326" stroke-linecap="round" transform="rotate(-90 60 60)"
+              style="transition:stroke-dasharray 0.6s ease,stroke 0.5s"/>
+            <text id="ringScore" x="60" y="56" text-anchor="middle" font-size="28" font-weight="700" fill="#22c55e" font-family="Rajdhani,sans-serif">0</text>
+            <text id="ringLevel" x="60" y="74" text-anchor="middle" font-size="11" fill="#22c55e" font-family="JetBrains Mono,monospace">LOW</text>
+          </svg>
+          <div class="factors-grid" id="factorsGrid"></div>
+        </div>
+
+        <!-- Live GPS Map Card -->
+        <div class="map-card">
+          <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
+            <span>📍 Route Tracking</span>
+            <span id="liveGpsBadge" class="gps-live-badge">● LIVE GPS</span>
+          </div>
+          <svg id="mapSvg" width="300" height="160" style="display:block;margin:0 auto">
+            <rect width="300" height="160" rx="10" fill="#0d1a2d"/>
+            <text x="150" y="85" text-anchor="middle" font-size="12" fill="#64748b" font-family="DM Sans,sans-serif">Acquiring GPS signal…</text>
+          </svg>
+          <div class="map-footer" id="mapCoords">Waiting for location…</div>
+          <div class="map-address" id="mapAddress"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Activity Log</div>
+          <div class="log-list" id="logList">
+            <div class="empty-state" style="padding:20px 0">Monitoring started — waiting for data…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ALERT SCREEN ══ -->
+      <div class="screen" id="screen-alert">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigateTo('home')">← Back</button>
+          <h2 class="screen-title">Alerts & Safety</h2>
+          <div></div>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="setTab('alerts',this)">🔔 Alerts</button>
+          <button class="tab-btn" onclick="setTab('contacts',this)">👥 Contacts</button>
+          <button class="tab-btn" onclick="setTab('resources',this)">📞 Resources</button>
+        </div>
+
+        <div class="tab-content" id="tabContent"></div>
+      </div>
+
+      <!-- ══ THREAT SCREEN ══ -->
+      <div class="screen" id="screen-threat">
+        <div class="screen-header">
+          <button class="back-btn" onclick="navigateTo('home')">✕ Close</button>
+          <h2 class="screen-title" id="threatTitle">Threat Detected</h2>
+          <div></div>
+        </div>
+        <div id="threatContent"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
