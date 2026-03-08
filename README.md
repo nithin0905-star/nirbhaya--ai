@@ -61,6 +61,14 @@ nirbhaya-ai
 │   └── style.css
 │
 ├── .env.example
+├── PROJECT_SUMMARY.md
 ├── README.md
-├── aws-architecture.png
-└── nirbhaya-ai-project-summary.md
+└── aws-architecture.png
+
+---
+
+## Live Demo
+
+Frontend deployed using AWS Amplify
+
+https://nirbhaya-ai.dlp3wci6h4j67.amplifyapp.com/
