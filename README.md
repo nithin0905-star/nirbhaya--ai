@@ -48,3 +48,19 @@ AI Analysis → Amazon Bedrock
 ---
 
 ## Project Structure
+
+nirbhaya-ai
+│
+├── backend
+│   ├── index.js
+│   └── package.json
+│
+├── frontend
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
+├── .env.example
+├── README.md
+├── aws-architecture.png
+└── nirbhaya-ai-project-summary.md
